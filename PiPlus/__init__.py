@@ -62,20 +62,20 @@ class PCF8597(object):
 
 		self._bus = smbus.SMBus(1)
 
-	def read(self, self._chn): #channel
-		if self._chn == 0:
+	def read(self, chn): #channel
+		if chn == 0:
 			bus.write_byte(self._address,0x40)
-		if self._chn == 1:
+		if chn == 1:
 			bus.write_byte(self._address,0x41)
-		if self._chn == 2:
+		if chn == 2:
 			bus.write_byte(self._address,0x42)
-		if self._chn == 3:
+		if chn == 3:
 			bus.write_byte(self._address,0x43)
 		bus.read_byte(self._address) # dummy read to start conversion
 		return bus.read_byte(self._address)
 
 	def write(self, val):
-		self._temp = val # move string value to temp
-		self._temp = int(_temp) # change string to integer
+		_temp = val # move string value to temp
+		_temp = int(_temp) # change string to integer
 		# print temp to see on terminal else comment out
-		bus.write_byte_data(self._address, 0x40, self._temp)
+		bus.write_byte_data(self._address, 0x40, _temp)
