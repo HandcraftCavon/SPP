@@ -55,7 +55,7 @@ def NormalDistribution(x, u=0, d=1):
 bus = smbus.SMBus(1)
 
 # PCF8591:
-class PCF8597(object):
+class PCF8591(object):
 	"""PCF8597 on Plus Shield"""
 	def __init__(self, Address=0x48, bus=bus):
 		super(PCF8597, self).__init__()
