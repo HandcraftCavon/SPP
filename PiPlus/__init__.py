@@ -53,29 +53,30 @@ def NormalDistribution(x, u=0, d=1):
 	result = (E ** (- ((x-u)**2) / (2*d*d))) / (math.sqrt(2 * PI) * d)
 	return result
 
+bus = smbus.SMBus(1)
+
 # PCF8591:
 class PCF8597(object):
 	"""PCF8597 on Plus Shield"""
-	def __init__(self, Address=0x48):
+	def __init__(self, Address=0x48, bus=bus):
 		super(PCF8597, self).__init__()
 		self._address = Address
-
-		self._bus = smbus.SMBus(1)
+		#self._bus = smbus.SMBus(1)
 
 	def read(self, chn): #channel
 		if chn == 0:
-			bus.write_byte(self._address,0x40)
+			self._bus.write_byte(self._address,0x40)
 		if chn == 1:
-			bus.write_byte(self._address,0x41)
+			self._bus.write_byte(self._address,0x41)
 		if chn == 2:
-			bus.write_byte(self._address,0x42)
+			self._bus.write_byte(self._address,0x42)
 		if chn == 3:
-			bus.write_byte(self._address,0x43)
-		bus.read_byte(self._address) # dummy read to start conversion
-		return bus.read_byte(self._address)
+			self._bus.write_byte(self._address,0x43)
+		self._bus.read_byte(self._address) # dummy read to start conversion
+		return self._bus.read_byte(self._address)
 
 	def write(self, val):
 		_temp = val # move string value to temp
 		_temp = int(_temp) # change string to integer
 		# print temp to see on terminal else comment out
-		bus.write_byte_data(self._address, 0x40, _temp)
+		self._bus.write_byte_data(self._address, 0x40, _temp)
