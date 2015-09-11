@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from PiPlus import *
+from __init__ import *
 
 LED = [CE0, D9, D10, D11, D12, D13, D14, D15, D16, CE1]
 

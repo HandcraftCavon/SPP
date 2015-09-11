@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-from PiPlus import *
-import RPi.GPIO as GPIO
-import time
-import math
-
-LED = [D1, D2, D3, D4, D5, D6, D7, D8]
+from __init__ import *
 
 dot		=	[100,   0,   0,   0,   0,   0,   0,   0]
 tail	=	[100,  70,  40,  10,   0,   0,   0,   0]
@@ -13,8 +8,12 @@ dark	=	[ 60,  60,  60,  60,  60,  60,  60,  60]
 off		=	[  0,   0,   0,   0,   0,   0,   0,   0]
 four	=	[  0,  60,   0,  60,   0,  60,   0,  60]
 
-def setup():
+def setup(port='A'):
 	global led1, led2, led3, led4, led5, led6, led7, led8
+	if port == 'A':
+		LED = [D1, D2, D3, D4, D5, D6, D7, D8]
+	if port == 'B':
+		LED = [D9, D10, D11, D12, D13, D14, D15, D16]
 	for x in LED:
 		GPIO.setup(x, GPIO.OUT, initial=1)
 		
@@ -51,7 +50,7 @@ def LED_onoff(ring):
 	led7.ChangeDutyCycle(100 - ring[6])
 	led8.ChangeDutyCycle(100 - ring[7])
 
-def spin(w, ring):
+def _spin(w, ring):
 	if w == 0:
 		a = ring[0]
 		ring[0] = ring[1]
@@ -93,13 +92,7 @@ def LED_breath(t=0.03):
 #		print breathLED
 		LED_onoff(breathLED)
 
-def NormalDistribution(x, u=0, d=1):
-	PI = 3.1415926
-	E = 2.718281828
-	result = (E ** (- ((x-u)**2) / (2*d*d))) / (math.sqrt(2 * PI) * d)
-	return result
-
-def ledmount(x, brightness):
+def _ledmount(x, brightness):
 	mount = [0, 0, 0, 0, 0, 0, 0, 0]
 	for i in range(x):
 		mount[7-i] = brightness
@@ -107,7 +100,7 @@ def ledmount(x, brightness):
 
 def LED_spin(ring=dot, w=0, t=0.2):
 	LED_onoff(LED)
-	LED = spin(w, LED)
+	LED = _spin(w, LED)
 	time.sleep(t)
 
 def LED_meter(value, brightness=40):
@@ -116,10 +109,10 @@ def LED_meter(value, brightness=40):
 		print 'Value =', value, 'Value ERROR, Value should not be negative'
 	for i in range(1, 9):
 		if value < 32*i:
-			ring = ledmount(i,brightness=brightness)
+			ring = _ledmount(i,brightness=brightness)
 			break
 	for i in range(3):
-		ring = spin(0, ring)
+		ring = _spin(0, ring)
 	LED_onoff(ring)
 	time.sleep(0.001)
 

@@ -22,9 +22,6 @@ def setup(port='A'):
 
 	ADC.setup()
 
-def map(x, in_min, in_max, out_min, out_max):
-	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
-
 def off():
 	for i in pins:
 		GPIO.output(pins[i], GPIO.HIGH)    # Turn off all leds
