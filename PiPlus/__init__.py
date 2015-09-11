@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import RPi.GPIO as GPIO
-import PCF8591 as ADC
 import time
 import math
 import smbus
