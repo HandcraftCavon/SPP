@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 from __init__ import *
 
-
-def setup(port=A):
-	if port == A:
-		Buzzer = D4
-	if port == B:
-		Buzzer = D12
-	GPIO.setup(Buzzer, GPIO.OUT, initial=0)
+def setup(port='A'):
+	global _Buzzer
+	if port == 'A':
+		_Buzzer = D4
+	if port == 'B':
+		_Buzzer = D12
+	GPIO.setup(_Buzzer, GPIO.OUT, initial=0)
 
 def on():
-	GPIO.output(Buzzer, 1)
+	global _Buzzer
+	GPIO.output(_Buzzer, 1)
 
 def off():
-	GPIO.output(Buzzer, 0)
+	GPIO.output(_Buzzer, 0)
 
 def beep(x, times=1):	# x for dalay time.
 	for i in range(times):
@@ -32,7 +33,8 @@ def main():
 	destroy()
 
 def destroy():
-	GPIO.output(Buzzer, 0)		
+	global _Buzzer
+	GPIO.output(_Buzzer, 0)		
 	time.sleep(0.5)
 	GPIO.cleanup()
 

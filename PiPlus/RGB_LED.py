@@ -1,25 +1,20 @@
 #!/usr/bin/env python
-import RPi.GPIO as GPIO
-import time
-import PCF8591 as ADC
-from PiPlus import *
+from __init__ import *
 
-colors = [0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0xFF00FF, 0x00FFFF]
-R = D13
-G = D14
-B = D15
-
-def setup(Rpin, Gpin, Bpin):
+def setup(port='A'):
 	global pins
 	global p_R, p_G, p_B
-	pins = {'pin_R': Rpin, 'pin_G': Gpin, 'pin_B': Bpin}
+	if port == 'A':
+		pins = {'pin_R': D5, 'pin_G': D6, 'pin_B': D7}
+	if port == 'B':
+		pins = {'pin_R': D13, 'pin_G': D14, 'pin_B': D15}
 	for i in pins:
 		GPIO.setup(pins[i], GPIO.OUT)   # Set pins' mode is output
 		GPIO.output(pins[i], GPIO.HIGH) # Set pins to high(+3.3V) to off led
 	
-	p_R = GPIO.PWM(pins['pin_R'], 2000)  # set Frequece to 2KHz
-	p_G = GPIO.PWM(pins['pin_G'], 1999)
-	p_B = GPIO.PWM(pins['pin_B'], 5000)
+	p_R = GPIO.PWM(pins['pin_R'], 100)  # set Frequece to 2KHz
+	p_G = GPIO.PWM(pins['pin_G'], 100)
+	p_B = GPIO.PWM(pins['pin_B'], 100)
 	
 	p_R.start(100)      # Initial duty Cycle = 0(leds off)
 	p_G.start(100)
@@ -59,7 +54,7 @@ def destroy():
 
 if __name__ == "__main__":
 	try:
-		setup(R, G, B)
+		setup()
 		loop()
 	except KeyboardInterrupt:
 		destroy()
