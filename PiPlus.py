@@ -1,27 +1,38 @@
 #!/usr/bin/env python
 import RPi.GPIO as GPIO
 import PCF8591 as ADC
+import time
 
-D0 = 4
-D1 = 17
-D2 = 18
-D3 = 27
-D4 = 22
-D5 = 23
-D6 = 24
-D7 = 25
-D8 = 5
+D0		=	7
 
-D9 = 6
-D10 = 13
-D11 = 19
-D12 = 26
-D13 = 12
-D14 = 16
-D15 = 20
-D16 = 21
+D1		=	11
+D2		=	12
+D3		=	13
+D4		=	15
+D5		=	16
+D6		=	18
+D7		=	22
+D8		=	29
 
-CE0 = 8
-CE1 = 7
-GPIO.setmode(GPIO.BCM)
+D9		=	31
+D10 	=	33
+D11 	=	35
+D12 	=	37
+D13 	=	32
+D14 	=	36
+D15 	=	38
+D16		=	40
+	
+CE0		=	24
+CE1		=	26
+
+SDA		=	3
+SCL		=	5
+TXD		=	8
+RXD		=	10
+MOSI	=	19
+MISO	=	21
+SCLK	=	23
+
+GPIO.setmode(GPIO.BOARD)
 
