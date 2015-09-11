@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from __init__ import *
 
-def setup(port='A'):
+def setup(port='A',cb1=_button1,cb2=_button2,cb3=_button3,cb4=_button4):
 	if port == 'A':
 		Btn = [D1, D2, D3, D4]
 	if port == 'B':
@@ -11,10 +11,10 @@ def setup(port='A'):
 	GPIO.setup(Btn[2], GPIO.IN, pull_up_down=GPIO.PUD_UP)
 	GPIO.setup(Btn[3], GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	GPIO.add_event_detect(Btn[0], GPIO.FALLING, callback=_button1, bouncetime=20)
-	GPIO.add_event_detect(Btn[1], GPIO.FALLING, callback=_button2, bouncetime=20)
-	GPIO.add_event_detect(Btn[2], GPIO.FALLING, callback=_button3, bouncetime=20)
-	GPIO.add_event_detect(Btn[3], GPIO.FALLING, callback=_button4, bouncetime=20)
+	GPIO.add_event_detect(Btn[0], GPIO.FALLING, callback=cb1, bouncetime=20)
+	GPIO.add_event_detect(Btn[1], GPIO.FALLING, callback=cb2, bouncetime=20)
+	GPIO.add_event_detect(Btn[2], GPIO.FALLING, callback=cb3, bouncetime=20)
+	GPIO.add_event_detect(Btn[3], GPIO.FALLING, callback=cb4, bouncetime=20)
 
 def _button1(chn):
 	print 'button 1'
