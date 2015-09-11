@@ -35,4 +35,3 @@ MISO	=	21
 SCLK	=	23
 
 GPIO.setmode(GPIO.BOARD)
-

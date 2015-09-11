@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+from __init__ import *
 
-from PiPlus import *
 
-# Pin define (If you plug the Buzzerin Digital Port B, Change D3 to D11)
-Buzzer = D4
-
-def setup():
+def setup(port=A):
+	if port == A:
+		Buzzer = D4
+	if port == B:
+		Buzzer = D12
 	GPIO.setup(Buzzer, GPIO.OUT, initial=0)
 
 def on():
@@ -14,7 +15,7 @@ def on():
 def off():
 	GPIO.output(Buzzer, 0)
 
-def beep(x, times):	# x for dalay time.
+def beep(x, times=1):	# x for dalay time.
 	for i in range(times):
 		on()
 		time.sleep(x)
