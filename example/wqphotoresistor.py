@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import PCF8591 as ADC
-import time
+from PiPlus import *
 
 def setup():
 	ADC.setup()

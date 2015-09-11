@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __init__ import *
+from PiPlus import *
 
 def setup(port='A'):
 	global pins

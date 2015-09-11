@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import PCF8591 as ADC
+from PiPlus import *
 
 def setup():
 	ADC.setup()

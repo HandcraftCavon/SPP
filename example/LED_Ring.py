@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __init__ import *
+from PiPlus import *
 
 dot		=	[100,   0,   0,   0,   0,   0,   0,   0]
 tail	=	[100,  70,  40,  10,   0,   0,   0,   0]

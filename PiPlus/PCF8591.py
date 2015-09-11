@@ -16,8 +16,7 @@
 #	History V1.0
 #	Release 2015/08/21		Cavon
 #------------------------------------------------------
-import smbus
-import time
+
 
 # for RPI version 1, use "bus = smbus.SMBus(0)"
 bus = smbus.SMBus(1)

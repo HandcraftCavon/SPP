@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from __init__ import *
+from PiPlus import *
 
 def setup(port='A',cb1=_button1,cb2=_button2,cb3=_button3,cb4=_button4):
 	if port == 'A':
