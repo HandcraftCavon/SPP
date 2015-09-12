@@ -1,0 +1,7 @@
+RPi.GPIO
+
+[test]
+coverage
+
+[dev]
+check-manifest
