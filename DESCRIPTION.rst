@@ -1,4 +1,4 @@
-A sample Python project
+PiPlus for RPi
 =======================
 
 This is the description file for the project.

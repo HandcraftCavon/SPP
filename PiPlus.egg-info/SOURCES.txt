@@ -2,8 +2,18 @@ DESCRIPTION.rst
 MANIFEST.in
 setup.cfg
 setup.py
+PiPlus/Buzzer.py
+PiPlus/DS18B20.py
+PiPlus/Joystick.py
+PiPlus/LCD1602.py
+PiPlus/LED_Bar_Graph.py
+PiPlus/LED_Ring.py
+PiPlus/Plus LCD1602.py
+PiPlus/Plus_Buttons.py
+PiPlus/Potentiometers.py
+PiPlus/RGB_LED.py
 PiPlus/__init__.py
-PiPlus/test.py
+PiPlus/wqphotoresistor.py
 PiPlus.egg-info/PKG-INFO
 PiPlus.egg-info/SOURCES.txt
 PiPlus.egg-info/dependency_links.txt
