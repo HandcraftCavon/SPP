@@ -17,12 +17,12 @@ def main():
 		'''
 		meter(value) is a meter, value range from 0 to 255.
 		'''
-		'''
+		
 		for x in range(255):
 			Bar.meter(x)
 			print 'x =', x
 			time.sleep(0.01)
-		'''
+		
 		'''
 		pulse(value) is also a meter, but put 0 is in the middle.
 		value range from 0 to 255
