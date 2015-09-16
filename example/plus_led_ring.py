@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-import PiPlus
-import time
+from PiPlus import *
 
 def setup():
 	global Ring
@@ -9,7 +8,7 @@ def setup():
 	Set port to A or B, accoring to the port you plug the module in.
 	Leave empty for default setting port='A'
 	'''
-	Ring = PiPlus.LED_Ring(port='b')
+	Ring = LED_Ring(port='b')
 	
 def main():
 	while True:

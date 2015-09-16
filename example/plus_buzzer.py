@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-import PiPlus
-import time
+from PiPlus import *
 
 def setup():
 	global Buzzer
-	''''
+	'''
 	initial the Buzzer module with PiPlus.Buzzer(port='A')
 	Set port to A or B, accoring to the port you plug the module in.
 	Leave empty for default setting port='A'
 	'''
-	Buzzer = PiPlus.Buzzer(port='B')
+	Buzzer = Buzzer(port='B')
 
 def main():
 	while True:

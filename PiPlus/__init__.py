@@ -274,6 +274,72 @@ class LED_Bar_Graph(object):
 	def destroy(self):
 		self.off()
 
+class RGB_LED(object):
+	# Plus RGB LED Module
+	def __init__(self, port='A'):
+		#!/usr/bin/env python
+		if port not in ['A', 'a', 'B', 'b']:
+			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
+
+		if port == 'A':
+			self._pins = [DA5, DA6, DA7]
+		elif port == 'B':
+			self._pins = [DB5, DB6, DB7]
+		for i in self._pins:
+			GPIO.setup(i, GPIO.OUT, initial=GPIO.HIGH)   # Set _pins mode to output
+		
+		self._R = GPIO.PWM(self._pins[0], 100)  # set Frequece to 100Hz
+		self._G = GPIO.PWM(self._pins[1], 100)
+		self._B = GPIO.PWM(self._pins[2], 100)
+		
+		self._R.start(100)      # Initial duty Cycle = 100(leds off)
+		self._G.start(100)
+		self._B.start(100)
+
+	def off(self):
+		for i in self._pins:
+			GPIO.output(i, GPIO.HIGH)    # Turn off all LEDs
+
+	def on(self, _R_val, _G_val, _B_val):
+		_R_val = map(_R_val, 0, 255, 0, 100)
+		_G_val = map(_G_val, 0, 255, 0, 100)
+		_B_val = map(_B_val, 0, 255, 0, 100)
+		
+		self._R.ChangeDutyCycle(100-_R_val)
+		self._G.ChangeDutyCycle(100-_G_val)
+		self._B.ChangeDutyCycle(100-_B_val)
+
+	def destroy(self):
+		self.off()
+		self._R.stop()
+		self._G.stop()
+		self._B.stop()
+
+class Buttons(object):
+	# Plus Buttons Module	
+	def __init__(self, port='A'):
+		#!/usr/bin/env python
+		if port not in ['A', 'a', 'B', 'b']:
+			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
+
+		if port == 'A':
+			self.btn1 = DA1
+			self.btn2 = DA2
+			self.btn3 = DA3
+			self.btn4 = DA4
+		elif port == 'B':
+			self.btn1 = DB1
+			self.btn2 = DB2
+			self.btn3 = DB3
+			self.btn4 = DB4
+		
+		GPIO.setup(self.btn1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btn2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btn3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.btn4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		
+	def destroy(self):
+		pass
 
 class RotaryEncoder(object):
 	# Plus Rotary Encoder Module
@@ -310,44 +376,6 @@ class RotaryEncoder(object):
 			if (self._Last_RoB_Status == 1) and (self._Current_RoB_Status == 0):
 				_counter = _counter - 1
 		return _counter
-
-class RGBLED(object):
-	# Plus RGB LED Module
-	def __init__(self, port='A'):
-		#!/usr/bin/env python
-		if port == 'A':
-			self._pins = [DA5, DA6, DA7]
-		if port == 'B':
-			self._pins = [DB5, DB6, DB7]
-		for i in self._pins:
-			GPIO.setup(i, GPIO.OUT, initial=GPIO.HIGH)   # Set pins' mode is output
-		
-		self._R = GPIO.PWM(self._pins[0], 100)  # set Frequece to 100Hz
-		self._G = GPIO.PWM(self._pins[1], 100)
-		self._B = GPIO.PWM(self._pins[2], 100)
-		
-		self._R.start(100)      # Initial duty Cycle = 1000(leds off)
-		self._G.start(100)
-		self._B.start(100)
-
-	def off(self):
-		for i in self._pins:
-			GPIO.output(self._pins[i], GPIO.HIGH)    # Turn off all leds
-
-	def on(self, _R_val, _G_val, _B_val):
-		_R_val = map(_R_val, 0, 255, 0, 100)
-		_G_val = map(_G_val, 0, 255, 0, 100)
-		_B_val = map(_B_val, 0, 255, 0, 100)
-		
-		self._R.ChangeDutyCycle(100-_R_val)     # Change duty cycle
-		self._G.ChangeDutyCycle(100-_G_val)
-		self._B.ChangeDutyCycle(100-_B_val)
-
-	def destroy(self):
-		self._R.stop()
-		self._G.stop()
-		self._B.stop()
-		self.off()
 
 class LCD1602(object):
 	_LCD_bus = smbus.SMBus(1)
