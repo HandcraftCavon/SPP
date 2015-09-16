@@ -1,0 +1,6 @@
+*.pyc
+build
+build/*
+TEMP
+dist
+PiPlus.egg-info
