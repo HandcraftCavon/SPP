@@ -156,7 +156,7 @@ class LED_Ring(object):
 			_ring[0] = _tmp
 		return _ring
 
-	def LED_breath(self, t=0.03):
+	def LED_breath(self, dt=0.03):
 		_breathLED = list(self.ALL_OFF)
 		for b in range(200):
 			_value = math.cos(b*0.0314) * -70 + 70
@@ -171,7 +171,7 @@ class LED_Ring(object):
 					_breathLED[i] = _value - 60
 				if i == 0:
 					_breathLED[i] = _value - 80
-			time.sleep(t)
+			time.sleep(dt)
 			self.LED_onoff(_breathLED)
 
 	def _ledmount(self, _x, _brightness):
@@ -180,10 +180,12 @@ class LED_Ring(object):
 			_mount[7-i] = _brightness
 		return _mount
 
-	def LED_spin(self, _ring, _w=0, _t=0.2):
-		self.LED_onoff(_ring)
-		LED = self._spin(_w, _ring)
-		time.sleep(_t)
+	def LED_spin(self, _ring, w=0, dt=0.2):
+		_tmp = _ring
+		self.LED_onoff(_tmp)
+		_tmp = self._spin(w, _tmp)
+		time.sleep(dt)
+		time.sleep(dt)
 
 	def LED_meter(self, _value, brightness=40):
 		_ring = list(self.ALL_OFF)
@@ -235,6 +237,43 @@ class Buzzer(object):
 
 	def destroy(self):
 		self.off()
+
+class LED_Bar_Graph(object):
+	def __init__(self, port='A'):
+			# Plus LED_Bar_Graph module from PiPlus@SunFounder
+		if port not in ['A', 'a', 'B', 'b']:
+			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
+
+		if port in ['A', 'a']:
+			self.LED = [CE0, DA1, DA2, DA3, DA4, DA5, DA6, DA7, DA8, CE1]
+		elif port in ['B', 'b']:
+			self.LED = [CE0, DB1, DB2, DB3, DB4, DB5, DB6, DB7, DB8, CE1]
+			
+		for x in self.LED:
+			GPIO.setup(x, GPIO.OUT, initial=1)
+
+	def off(self):
+		for i in self.LED:
+			GPIO.output(i, 1)
+
+	def meter(self, value):
+		self.off()
+		for i in range(10):
+			if value < 25.5*i:
+				break
+			GPIO.output(self.LED[i], 0)
+	
+	def pulse(self, value):
+		self.off()
+		for i in range(5):
+			if value < 51*i:
+				break
+			GPIO.output(self.LED[i+5], 0)
+			GPIO.output(self.LED[4-i], 0)
+
+	def destroy(self):
+		self.off()
+
 
 class RotaryEncoder(object):
 	# Plus Rotary Encoder Module
