@@ -9,12 +9,13 @@ def setup():
 	Leave empty for default setting port='A'
 	'''
 	Buttons = Buttons(port='B')
-	
-	# Set callbacks for falling, rising or both edge detect
-	# GPIO.add_event_detect(Pin, Rising/Falling, callback)
-	# Change Raise/Falling to 'GPIO.RISING' to detect rising, 
-	# Change Raise/Falling to 'GPIO.FALlING' to detect falling, 
-	# Change Raise/Falling to 'GPIO.BOTH' to detect both rising and falling,
+	'''
+	Set callbacks for falling, rising or both edge detect
+	GPIO.add_event_detect(Pin, Rising/Falling, callback)
+	Change Raise/Falling to 'GPIO.RISING' to detect rising, 
+	Change Raise/Falling to 'GPIO.FALlING' to detect falling, 
+	Change Raise/Falling to 'GPIO.BOTH' to detect both rising and falling,
+	'''
 	GPIO.add_event_detect(Buttons.btn1, GPIO.BOTH, callback=btn1)
 	GPIO.add_event_detect(Buttons.btn2, GPIO.BOTH, callback=btn2)
 	GPIO.add_event_detect(Buttons.btn3, GPIO.BOTH, callback=btn3)
@@ -25,6 +26,8 @@ def main():
 	while True:
 		pass
 
+
+# Add callback function for each key
 def btn1(chn):
 	tmp = GPIO.input(Buttons.btn1)
 	if tmp == 0:

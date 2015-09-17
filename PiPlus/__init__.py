@@ -281,9 +281,9 @@ class RGB_LED(object):
 		if port not in ['A', 'a', 'B', 'b']:
 			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
 
-		if port == 'A':
+		if port in ['A', 'a']:
 			self._pins = [DA5, DA6, DA7]
-		elif port == 'B':
+		elif port in ['B', 'b']:
 			self._pins = [DB5, DB6, DB7]
 		for i in self._pins:
 			GPIO.setup(i, GPIO.OUT, initial=GPIO.HIGH)   # Set _pins mode to output
@@ -322,12 +322,12 @@ class Buttons(object):
 		if port not in ['A', 'a', 'B', 'b']:
 			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
 
-		if port == 'A':
+		if port in ['A', 'a']:
 			self.btn1 = DA1
 			self.btn2 = DA2
 			self.btn3 = DA3
 			self.btn4 = DA4
-		elif port == 'B':
+		elif port in ['B', 'b']:
 			self.btn1 = DB1
 			self.btn2 = DB2
 			self.btn3 = DB3
@@ -341,19 +341,21 @@ class Buttons(object):
 	def destroy(self):
 		pass
 
-class RotaryEncoder(object):
+class Rotary_Encoder(object):
 	# Plus Rotary Encoder Module
-	def __init__(self, call, port='A'):
+	def __init__(self, port='A'):
 		self._port = port
-		self._callback = call
-		if self._port == 'A':
+		if port not in ['A', 'a', 'B', 'b']:
+			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
+
+		if port in ['A', 'a']:
 			self._APin	 = DA1    # A Pin
 			self._BPin	 = DA2    # B Pin
-			self._BtnPin = DA3    # Button Pin
-		if self._port == 'B':
+			self.BTN = DA3    # Button Pin
+		elif port in ['B', 'b']:
 			self._APin	 = DB1    # A Pin
 			self._BPin	 = DB2    # B Pin
-			self._BtnPin = DB3    # Button Pin
+			self.BTN = DB3    # Button Pin
 
 		self._flag = 0
 		self._Last_RoB_Status = 0
@@ -361,10 +363,9 @@ class RotaryEncoder(object):
 
 		GPIO.setup(self._APin, GPIO.IN)    # input mode
 		GPIO.setup(self._BPin, GPIO.IN)
-		GPIO.setup(self._BtnPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(self._BtnPin, GPIO.FALLING, callback=self._callback)
+		GPIO.setup(self.BTN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	def rotaryDeal(self, _counter):
+	def rotarydeal(self, _counter):
 		self._Last_RoB_Status = GPIO.input(self._BPin)
 		while(not GPIO.input(self._APin)):
 			self._Current_RoB_Status = GPIO.input(self._BPin)
@@ -437,12 +438,12 @@ class LCD1602(object):
 		_tmp &= 0xFB               # EN = 0
 		self._write_data(_tmp)
 
-	def clear(self):
-		self._send_command(0x01) # Clear Screen
-
 	def _openlight(self):  # Enable the backlight
 		self._LCD_bus.write_byte(self._LCD_ADDR,0x08)
 		self._LCD_bus.close()
+
+	def clear(self):
+		self._send_command(0x01) # Clear Screen
 
 	def write(self, x, y, str):
 		if x < 0:
@@ -460,3 +461,6 @@ class LCD1602(object):
 
 		for chr in str:
 			self._send_data(ord(chr))
+
+	def destroy(self):
+		self.clear()
