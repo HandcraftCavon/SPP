@@ -18,42 +18,53 @@ def main():
 		RGB.off()
 		
 		'''
-		on(Red_value, Green_value, Blue_value) is to turn on the RGB 
+		rgb(Red_value, Green_value, Blue_value):
+		This is a function to turn on the RGB 
 		in specific RGB value, all value range from 0 to 255
 		'''
-		for R in range(256):
-			RGB.on(R, 0, 0)
-			time.sleep(0.01)
-		for R in range(256):
-			RGB.on(255-R, 0, 0)
-			time.sleep(0.01)
-			
-		for G in range(256):
-			RGB.on(0, G, 0)
-			time.sleep(0.01)
-		for G in range(256):
-			RGB.on(0, 255-G, 0)
-			time.sleep(0.01)
-			
-		for B in range(256):
-			RGB.on(0, 0, B)
-			time.sleep(0.01)
-		for B in range(256):
-			RGB.on(0, 0, 255-B)
-			time.sleep(0.01)
-			
-		for i in range(768):
-			R = abs(i-384)-128
-			G = -abs(i-256)+256
-			B = -abs(i-512)+256
-			if R < 0:
-				R = 0
-			if G < 0:
-				G = 0
-			if B < 0:
-				B = 0
-			RGB.on(R, G, B)
-			time.sleep(0.01)
+		RGB.rgb(255, 0, 0)
+		time.sleep(1)
+		RGB.rgb(0, 255, 0)
+		time.sleep(1)
+		RGB.rgb(0, 0, 255)
+		time.sleep(1)
+		RGB.rgb(255, 255, 255)
+		time.sleep(1)
+		
+		RGB.rgb(100, 180, 255)
+		time.sleep(1)
+		RGB.rgb(200, 100, 255)
+		time.sleep(1)
+		RGB.rgb(255, 0, 120)
+		time.sleep(1)
+		
+		'''
+		breath(Red_value, Green_value, Blue_value, dt=0.01): 
+		This is a function to let the RGB breathe in specific RGB value,
+		dt for delta time. Leave empty for default setting 0.01s
+		RGB value range from 0 to 255
+		'''
+		RGB.breath(255, 0, 0)
+		RGB.breath(0, 255, 0)
+		RGB.breath(0, 0, 255)
+		
+		RGB.breath(0, 255, 255)
+		RGB.breath(255, 0, 255)
+		RGB.breath(255, 255, 0)
+		
+		'''
+		hsb(Hue_value, _s=1, _b=1):
+		This is a function to specific color in HSB.
+		Hue_value range from 0 to 360
+		_s and _b range from 0.00 to 1. Leave empty for default setting 1
+		'''
+		for i in range(360):
+			RGB.hsb(i)
+			time.sleep(0.1)
+		
+		for i in range(360):
+			RGB.hsb(i, _b=0.7)
+			time.sleep(0.1)
 	
 def destroy():
 	RGB.destroy()

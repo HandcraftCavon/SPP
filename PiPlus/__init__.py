@@ -55,12 +55,12 @@ def NormalDistribution(x, u=0, d=1):
 	return result
 
 class PCF8591(object):
-	"""PCF8597 on Plus Shield"""
-	_ADC_bus = smbus.SMBus(1)
-	def __init__(self, Address=0x48, bus=_ADC_bus):
+	# PCF8597 on Plus Shield
+	_ADC_bus = smbus.SMBus(1) # or bus = smbus.SMBus(0) for Revision 1 boards
+	def __init__(self, Address=0x48, _bus=_ADC_bus):
 		super(PCF8591, self).__init__()
 		self._address = Address
-		self._bus = bus
+		self._bus = _bus
 
 	def read(self, chn): #channel
 		if chn == 0:
@@ -81,7 +81,7 @@ class PCF8591(object):
 		self._bus.write_byte_data(self._address, 0x40, _temp)
 
 class LED_Ring(object):
-	# Plus LED_Ring module from PiPlus@SunFounder
+	# Plus LED Ring module of PiPlus from SunFounder
 	def __init__(self, port='A'):
 		if port not in ['A', 'a', 'B', 'b']:
 			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
@@ -211,6 +211,7 @@ class LED_Ring(object):
 		self._led8.stop()
 
 class Buzzer(object):
+	# Plus Buzzer module of PiPlus from SunFounder
 	def __init__(self, port='A'):
 		self._port = port
 		if self._port == 'A' or self._port == 'a':
@@ -239,6 +240,7 @@ class Buzzer(object):
 		self.off()
 
 class LED_Bar_Graph(object):
+	# Plus LED Bar Graph module of PiPlus from SunFounder
 	def __init__(self, port='A'):
 			# Plus LED_Bar_Graph module from PiPlus@SunFounder
 		if port not in ['A', 'a', 'B', 'b']:
@@ -275,7 +277,7 @@ class LED_Bar_Graph(object):
 		self.off()
 
 class RGB_LED(object):
-	# Plus RGB LED Module
+	# Plus RGB LED module of PiPlus from SunFounder
 	def __init__(self, port='A'):
 		#!/usr/bin/env python
 		if port not in ['A', 'a', 'B', 'b']:
@@ -300,7 +302,7 @@ class RGB_LED(object):
 		for i in self._pins:
 			GPIO.output(i, GPIO.HIGH)    # Turn off all LEDs
 
-	def on(self, _R_val, _G_val, _B_val):
+	def rgb(self, _R_val, _G_val, _B_val):
 		_R_val = map(_R_val, 0, 255, 0, 100)
 		_G_val = map(_G_val, 0, 255, 0, 100)
 		_B_val = map(_B_val, 0, 255, 0, 100)
@@ -308,7 +310,64 @@ class RGB_LED(object):
 		self._R.ChangeDutyCycle(100-_R_val)
 		self._G.ChangeDutyCycle(100-_G_val)
 		self._B.ChangeDutyCycle(100-_B_val)
-
+		
+	def breath(self, _R_val, _G_val, _B_val, dt = 0.01):
+		for x in range(628):
+			y = -math.cos(x/100.0)*128+128
+			_R = map(y, 0, 256, 0, _R_val)
+			_G = map(y, 0, 256, 0, _G_val)
+			_B = map(y, 0, 256, 0, _B_val)
+			self.rgb(_R, _G, _B)
+			time.sleep(dt)
+			
+	def hsb(self, _h, _s = 1, _b = 1):
+		_hi = (_h/60)%6
+		_f = _h / 60.0 - _hi
+		_p = _b * (1 - _s)
+		_q = _b * (1 - _f * _s)
+		_t = _b * (1 - (1 - _f) * _s)
+		
+		if _hi == 0:
+			_R_val = _b
+			_G_val = _t
+			_B_val = _p
+		if _hi == 1:
+			_R_val = _q
+			_G_val = _b
+			_B_val = _p
+		if _hi == 2:
+			_R_val = _p
+			_G_val = _b
+			_B_val = _t
+		if _hi == 3:
+			_R_val = _p
+			_G_val = _q
+			_B_val = _b
+		if _hi == 4:
+			_R_val = _t
+			_G_val = _p
+			_B_val = _b
+		if _hi == 5:
+			_R_val = _b
+			_G_val = _p
+			_B_val = _q
+			
+		try:
+			self.rgb(_R_val*255.0, _G_val*255.0, _B_val*255.0)
+		except:
+			print _R_val, _G_val, _B_val
+		'''
+		R = abs(i-384)-128
+		G = -abs(i-256)+256
+		B = -abs(i-512)+256
+		if R < 0:
+			R = 0
+		if G < 0:
+			G = 0
+		if B < 0:
+			B = 0
+		self.on(R, G, B)
+		'''
 	def destroy(self):
 		self.off()
 		self._R.stop()
@@ -316,7 +375,7 @@ class RGB_LED(object):
 		self._B.stop()
 
 class Buttons(object):
-	# Plus Buttons Module	
+	# Plus Buttons module of PiPlus from SunFounder	
 	def __init__(self, port='A'):
 		#!/usr/bin/env python
 		if port not in ['A', 'a', 'B', 'b']:
@@ -342,7 +401,7 @@ class Buttons(object):
 		pass
 
 class Rotary_Encoder(object):
-	# Plus Rotary Encoder Module
+	# Plus Rotary Encoder module of PiPlus from SunFounder
 	def __init__(self, port='A'):
 		self._port = port
 		if port not in ['A', 'a', 'B', 'b']:
@@ -379,7 +438,8 @@ class Rotary_Encoder(object):
 		return _counter
 
 class LCD1602(object):
-	_LCD_bus = smbus.SMBus(1)
+	# Plus LCD1602 module of PiPlus from SunFounder
+	_LCD_bus = smbus.SMBus(1) # or bus = smbus.SMBus(0) for Revision 1 boards
 	def __init__(self, BACKGROUND_LIGHT=1, ADDRESS=0x27, _bus=_LCD_bus):
 		self._LCD_bus = _bus
 		self._LCD_ADDR = ADDRESS
@@ -464,3 +524,83 @@ class LCD1602(object):
 
 	def destroy(self):
 		self.clear()
+
+class Motion_Sensor(object):
+	# Plus Motion Sensor of PiPlus from SunFounder
+	_MS_bus = smbus.SMBus(1) # or bus = smbus.SMBus(0) for Revision 1 boards
+
+	def __init__(self, _bus=_MS_bus):
+		# Power management registers
+		self._power_mgmt_1 = 0x6b
+		self._power_mgmt_2 = 0x6c
+		self._MS_bus = _bus
+		self._address = 0x69
+		# Now wake the 6050 up as it starts in sleep mode
+		self._MS_bus.write_byte_data(self._address, self._power_mgmt_1, 0)
+		
+	def _read_byte(self, _adr):
+		return self._MS_bus.read_byte_data(self._address, _adr)
+
+	def _read_word(self, _adr):
+		_high = self._MS_bus.read_byte_data(self._address, _adr)
+		_low = self._MS_bus.read_byte_data(self._address, _adr+1)
+		_val = (_high << 8) + _low
+		return _val
+
+	def _read_word_2c(self, _adr):
+		_val = self._read_word(_adr)
+		if (_val >= 0x8000):
+			return -((65535 - _val) + 1)
+		else:
+			return _val
+
+	def _dist(self, _a, _b):
+		return math.sqrt((_a * _a) + (_b * _b))
+
+	def _get_x_rotation(self, _x, _y, _z):
+		_radians = math.atan2(_y, self._dist(_x, _z))
+		return math.degrees(_radians)
+		
+	def _get_y_rotation(self, _x, _y, _z):
+		_radians = math.atan2(_x, self._dist(_y, _z))
+		return -math.degrees(_radians)
+
+	def _get_z_rotation(self, _x, _y, _z):
+		_radians = math.atan2(_z, self._dist(_x, _y))
+		return math.degrees(_radians)
+		
+	def get_gyro(self):
+		_gyro_xout = self._read_word_2c(0x43)
+		_gyro_yout = self._read_word_2c(0x45)
+		_gyro_zout = self._read_word_2c(0x47)
+
+		return _gyro_xout, _gyro_yout, _gyro_zout
+		
+	def get_scaled_gyro(self):
+		_gyro_xout, _gyro_yout, _gyro_zout = self.get_gyro()
+		
+		return (_gyro_xout / 131.0), (_gyro_yout / 131.0), (_gyro_zout / 131.0)
+
+	def get_accel(self):
+		_accel_xout = self._read_word_2c(0x3b)
+		_accel_yout = self._read_word_2c(0x3d)
+		_accel_zout = self._read_word_2c(0x3f)
+		
+		return _accel_xout, _accel_yout, _accel_zout
+		
+	def get_scaled_accel(self):
+		_accel_xout, _accel_yout, _accel_zout = self.get_accel()
+		
+		_accel_xout_scaled = _accel_xout / 16384.0
+		_accel_yout_scaled = _accel_yout / 16384.0
+		_accel_zout_scaled = _accel_zout / 16384.0
+
+		return _accel_xout_scaled, _accel_yout_scaled, _accel_zout_scaled
+	
+	def get_rotation(self):
+		_x, _y, _z = self.get_scaled_accel()
+		return self._get_x_rotation(_x, _y, _z), self._get_y_rotation(_x, _y, _z), self._get_z_rotation(_x, _y, _z)
+	
+	def destroy():
+		pass
+
