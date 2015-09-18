@@ -4,3 +4,4 @@ build/*
 TEMP
 dist
 PiPlus.egg-info
+test
