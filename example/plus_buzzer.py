@@ -1,6 +1,12 @@
 #!/usr/bin/env python
+<<<<<<< HEAD
 from PiPlus import *
 
+=======
+import PiPlus
+import time
+#fgjoeijgoierjgperjkg
+>>>>>>> pr/1
 def setup():
 	global Buzzer
 	'''
