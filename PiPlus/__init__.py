@@ -93,13 +93,6 @@ class LED_Ring(object):
 			
 		for x in LED:
 			GPIO.setup(x, GPIO.OUT, initial=1)
-	
-		self.SINGLE		=	(100,   0,   0,   0,   0,   0,   0,   0)
-		self.TAIL		=	(100,  70,  40,  10,   0,   0,   0,   0)
-		self.STAR		=	(  0,  60,   0,  60,   0,  60,   0,  60)
-		self.ALL_BRIGHT	=	(100, 100, 100, 100, 100, 100, 100, 100)
-		self.ALL_DARK	=	( 60,  60,  60,  60,  60,  60,  60,  60)
-		self.ALL_OFF	=	(  0,   0,   0,   0,   0,   0,   0,   0)
 
 		self._led1 = GPIO.PWM(LED[0], 100)
 		self._led2 = GPIO.PWM(LED[1], 100)
@@ -117,8 +110,28 @@ class LED_Ring(object):
 		self._led6.start(100)
 		self._led7.start(100)
 		self._led8.start(100)
+		
+		
+	def SINGLE(self):
+		return [100,   0,   0,   0,   0,   0,   0,   0]
+		
+	def ARC(self):
+		return [100, 100, 100,   0,   0,   0,   0,   0]
+		
+	def STAR(self):
+		return [  0,  60,   0,  60,   0,  60,   0,  60]
+		
+	def ALL_BRIGHT(self):
+		return [100, 100, 100, 100, 100, 100, 100, 100]
+		
+	def ALL_DARK(self):
+		return [ 60,  60,  60,  60,  60,  60,  60,  60]
+		
+	def ALL_OFF(self):
+		return [  0,   0,   0,   0,   0,   0,   0,   0]
 
-	def LED_onoff(self, _ring):
+
+	def on(self, _ring):
 		for i in range(8):
 			if _ring[i] > 100:
 				_ring[i] = 100
@@ -133,7 +146,7 @@ class LED_Ring(object):
 		self._led7.ChangeDutyCycle(100 - _ring[6])
 		self._led8.ChangeDutyCycle(100 - _ring[7])
 
-	def _spin(self, _w, _ring):
+	def _spin(self, _w, _ring): # w=0: clockwise, w=1: anticlockwise
 		if _w == 0:
 			_tmp = _ring[0]
 			_ring[0] = _ring[1]
@@ -156,8 +169,8 @@ class LED_Ring(object):
 			_ring[0] = _tmp
 		return _ring
 
-	def LED_breath(self, dt=0.03):
-		_breathLED = list(self.ALL_OFF)
+	def breath(self, dt=0.03):
+		_breathLED = self.ALL_OFF()
 		for b in range(200):
 			_value = math.cos(b*0.0314) * -70 + 70
 			for i in range(8):
@@ -172,23 +185,22 @@ class LED_Ring(object):
 				if i == 0:
 					_breathLED[i] = _value - 80
 			time.sleep(dt)
-			self.LED_onoff(_breathLED)
+			self.on(_breathLED)
 
 	def _ledmount(self, _x, _brightness):
-		_mount = list(self.ALL_OFF)
+		_mount = self.ALL_OFF()
 		for i in range(_x):
 			_mount[7-i] = _brightness
 		return _mount
 
-	def LED_spin(self, _ring, w=0, dt=0.2):
+	def spin(self, _ring, w=0, dt=0.2):
 		_tmp = _ring
-		self.LED_onoff(_tmp)
+		self.on(_tmp)
 		_tmp = self._spin(w, _tmp)
 		time.sleep(dt)
-		time.sleep(dt)
 
-	def LED_meter(self, _value, brightness=40):
-		_ring = list(self.ALL_OFF)
+	def meter(self, _value, brightness=40):
+		_ring = self.ALL_OFF()
 		if _value < 0:
 			raise ValueError("Unexpected '_value' value {0}, _value should not be negective)'".format(_value))
 		for i in range(1, 9):
@@ -197,7 +209,7 @@ class LED_Ring(object):
 				break
 		for i in range(3):
 			_ring = self._spin(0, _ring)
-		self.LED_onoff(_ring)
+		self.on(_ring)
 		time.sleep(0.001)
 
 	def destroy(self):
@@ -396,6 +408,41 @@ class Buttons(object):
 		GPIO.setup(self.btn2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.setup(self.btn3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 		GPIO.setup(self.btn4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+	def add_event_detect(self, btn1_falling=None, btn2_falling=None, btn3_falling=None, btn4_falling=None, btn1_rising=None, btn2_rising=None, btn3_rising=None, btn4_rising=None, btn1_both=None, btn2_both=None, btn3_both=None, btn4_both=None):
+		_c_btn1 = [btn1_falling, btn1_rising, btn1_both]
+		_c_btn2 = [btn2_falling, btn2_rising, btn2_both]
+		_c_btn3 = [btn3_falling, btn3_rising, btn3_both]
+		_c_btn4 = [btn4_falling, btn4_rising, btn4_both]
+		
+		if _c_btn1.count(None) < 2 or _c_btn2.count(None) < 2 or _c_btn3.count(None) < 2 or _c_btn4.count(None) < 2:
+			raise RuntimeError('Conflicting edge detection events, The same button should not be defined as two different edge detection events')
+		if btn1_falling != None:
+			GPIO.add_event_detect(self.btn1, GPIO.FALLING, callback=btn1_falling)
+		if btn2_falling != None:
+			GPIO.add_event_detect(self.btn2, GPIO.FALLING, callback=btn2_falling)
+		if btn3_falling != None:
+			GPIO.add_event_detect(self.btn3, GPIO.FALLING, callback=btn3_falling)
+		if btn4_falling != None:
+			GPIO.add_event_detect(self.btn4, GPIO.FALLING, callback=btn4_falling)
+			
+		if btn1_rising != None:
+			GPIO.add_event_detect(self.btn1, GPIO.RISING, callback=btn1_rising)
+		if btn2_rising != None:
+			GPIO.add_event_detect(self.btn2, GPIO.RISING, callback=btn2_rising)
+		if btn3_rising != None:
+			GPIO.add_event_detect(self.btn3, GPIO.RISING, callback=btn3_rising)
+		if btn4_rising != None:
+			GPIO.add_event_detect(self.btn4, GPIO.RISING, callback=btn4_rising)
+
+		if btn1_both != None:
+			GPIO.add_event_detect(self.btn1, GPIO.BOTH, callback=btn1_both)
+		if btn2_both != None:
+			GPIO.add_event_detect(self.btn2, GPIO.BOTH, callback=btn2_both)
+		if btn3_both != None:
+			GPIO.add_event_detect(self.btn3, GPIO.BOTH, callback=btn3_both)
+		if btn4_both != None:
+			GPIO.add_event_detect(self.btn4, GPIO.BOTH, callback=btn4_both)
 		
 	def destroy(self):
 		pass
