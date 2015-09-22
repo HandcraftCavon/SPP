@@ -49,8 +49,8 @@ UP = 0
 LEFT = 1
 DOWN = 2
 RIGHT = 3
-HOME = 4
-PRESSED = 5
+HOME = 5
+PRESSED = 6
 
 def map(x, in_min, in_max, out_min, out_max):
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
@@ -60,6 +60,11 @@ def NormalDistribution(x, u=0, d=1):
 	E = 2.718281828
 	result = (E ** (-((x-u)**2) / (2*d*d))) / (math.sqrt(2 * PI) * d)
 	return result
+
+def Low_pass_Filter(_value, _new_value):
+	_a = 50
+	_base = 100
+	return ((_base-_a)*_value)/100.0+(_a*_new_value)/100.0
 
 class DS1307(object):
 	def __init__(self):
@@ -415,55 +420,55 @@ class Buttons(object):
 			raise ValueError("Unexpected port value {0}, Set port to 'A' or 'B', like: '(port='A')'".format(port))
 
 		if port in ['A', 'a']:
-			self.btn1 = DA1
-			self.btn2 = DA2
-			self.btn3 = DA3
-			self.btn4 = DA4
+			self.UP = DA1
+			self.LEFT = DA2
+			self.DOWN = DA3
+			self.RIGHT = DA4
 		elif port in ['B', 'b']:
-			self.btn1 = DB1
-			self.btn2 = DB2
-			self.btn3 = DB3
-			self.btn4 = DB4
+			self.UP = DB1
+			self.LEFT = DB2
+			self.DOWN = DB3
+			self.RIGHT = DB4
 		
-		GPIO.setup(self.btn1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btn2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btn3, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.setup(self.btn4, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.UP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.LEFT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.DOWN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.setup(self.RIGHT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	def add_event_detect(self, btn1_falling=None, btn2_falling=None, btn3_falling=None, btn4_falling=None, btn1_rising=None, btn2_rising=None, btn3_rising=None, btn4_rising=None, btn1_both=None, btn2_both=None, btn3_both=None, btn4_both=None):
-		_c_btn1 = [btn1_falling, btn1_rising, btn1_both]
-		_c_btn2 = [btn2_falling, btn2_rising, btn2_both]
-		_c_btn3 = [btn3_falling, btn3_rising, btn3_both]
-		_c_btn4 = [btn4_falling, btn4_rising, btn4_both]
+	def add_event_detect(self, up_falling=None, left_falling=None, down_falling=None, right_falling=None, up_rising=None, left_rising=None, down_rising=None, right_rising=None, up_both=None, left_both=None, down_both=None, right_both=None):
+		_c_up = [up_falling, up_rising, up_both]
+		_c_left = [left_falling, left_rising, left_both]
+		_c_down = [down_falling, down_rising, down_both]
+		_c_right = [right_falling, right_rising, right_both]
 		
-		if _c_btn1.count(None) < 2 or _c_btn2.count(None) < 2 or _c_btn3.count(None) < 2 or _c_btn4.count(None) < 2:
+		if _c_up.count(None) < 2 or _c_left.count(None) < 2 or _c_down.count(None) < 2 or _c_right.count(None) < 2:
 			raise RuntimeError('Conflicting edge detection events, The same button should not be defined as two different edge detection events')
-		if btn1_falling != None:
-			GPIO.add_event_detect(self.btn1, GPIO.FALLING, callback=btn1_falling)
-		if btn2_falling != None:
-			GPIO.add_event_detect(self.btn2, GPIO.FALLING, callback=btn2_falling)
-		if btn3_falling != None:
-			GPIO.add_event_detect(self.btn3, GPIO.FALLING, callback=btn3_falling)
-		if btn4_falling != None:
-			GPIO.add_event_detect(self.btn4, GPIO.FALLING, callback=btn4_falling)
+		if up_falling != None:
+			GPIO.add_event_detect(self.UP, GPIO.FALLING, callback=up_falling)
+		if left_falling != None:
+			GPIO.add_event_detect(self.LEFT, GPIO.FALLING, callback=left_falling)
+		if down_falling != None:
+			GPIO.add_event_detect(self.DOWN, GPIO.FALLING, callback=down_falling)
+		if right_falling != None:
+			GPIO.add_event_detect(self.RIGHT, GPIO.FALLING, callback=right_falling)
 			
-		if btn1_rising != None:
-			GPIO.add_event_detect(self.btn1, GPIO.RISING, callback=btn1_rising)
-		if btn2_rising != None:
-			GPIO.add_event_detect(self.btn2, GPIO.RISING, callback=btn2_rising)
-		if btn3_rising != None:
-			GPIO.add_event_detect(self.btn3, GPIO.RISING, callback=btn3_rising)
-		if btn4_rising != None:
-			GPIO.add_event_detect(self.btn4, GPIO.RISING, callback=btn4_rising)
+		if up_rising != None:
+			GPIO.add_event_detect(self.UP, GPIO.RISING, callback=up_rising)
+		if left_rising != None:
+			GPIO.add_event_detect(self.LEFT, GPIO.RISING, callback=left_rising)
+		if down_rising != None:
+			GPIO.add_event_detect(self.DOWN, GPIO.RISING, callback=down_rising)
+		if right_rising != None:
+			GPIO.add_event_detect(self.RIGHT, GPIO.RISING, callback=right_rising)
 
-		if btn1_both != None:
-			GPIO.add_event_detect(self.btn1, GPIO.BOTH, callback=btn1_both)
-		if btn2_both != None:
-			GPIO.add_event_detect(self.btn2, GPIO.BOTH, callback=btn2_both)
-		if btn3_both != None:
-			GPIO.add_event_detect(self.btn3, GPIO.BOTH, callback=btn3_both)
-		if btn4_both != None:
-			GPIO.add_event_detect(self.btn4, GPIO.BOTH, callback=btn4_both)
+		if up_both != None:
+			GPIO.add_event_detect(self.UP, GPIO.BOTH, callback=up_both)
+		if left_both != None:
+			GPIO.add_event_detect(self.LEFT, GPIO.BOTH, callback=left_both)
+		if down_both != None:
+			GPIO.add_event_detect(self.DOWN, GPIO.BOTH, callback=down_both)
+		if right_both != None:
+			GPIO.add_event_detect(self.RIGHT, GPIO.BOTH, callback=right_both)
 		
 	def destroy(self):
 		pass
@@ -539,8 +544,7 @@ class Slide_Potentiometers(Analog_Port):
 			_sp_value.append(self._adc.read(_i-1))
 		
 		return tuple(_sp_value)
-			
-
+	
 class Joystick(Analog_Port):
 	def read(self):
 		_x = self._adc.read(AIN0)
@@ -550,18 +554,41 @@ class Joystick(Analog_Port):
 
 	def get_status(self):
 		_x, _y, _btn = self.read()
-		if _y > 245:
-			return UP
-		if _x > 245:
-			return LEFT
-		if _y < 10:
-			return DOWN
-		if _x < 10:
-			return RIGHT
-		if 123 < _x < 133 and 123< _y < 133 and _btn > 50:
-			return HOME
 		if _btn == 0:
 			return PRESSED
+		elif 118 < _x < 138 and 118 < _y < 138: 
+			return HOME
+		else:
+			if _y > 245:
+				return UP
+			if _y < 10:
+				return DOWN
+			if _x > 245:
+				return LEFT
+			if _x < 10:
+				return RIGHT
+
+class Sound_Sensor(Analog_Port):
+	def __init__(self):
+		self._adc = PCF8591()
+		self._tmp = 0
+		
+	def read(self):
+		_value = self._adc.read(AIN3)
+		return _value
+		
+	def read_max(self):
+		_value = self._adc.read(AIN3)
+		_value = abs(_value)
+		_value = map(_value, 170, 255, 0, 255)
+#		if _value > self._tmp:
+#			self._tmp = _value
+#		elif _value < self._tmp:
+#			self._tmp = 0
+		_F_value = Low_pass_Filter(self._tmp, _value)
+		self._tmp = _value
+	
+		return _F_value
 
 class LCD1602(object):
 	# Plus LCD1602 module of PiPlus from SunFounder

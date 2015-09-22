@@ -11,15 +11,15 @@ def setup():
 	Buttons = Buttons(port='B')
 	'''
 	Set callbacks for falling, rising or both edge detection
-	add_event_detect(btn1_falling=None, btn2_falling=None, btn3_falling=None, btn4_falling=None, 
-					 btn1_rising=None,	btn2_rising=None,  btn3_rising=None,  btn4_rising=None, 
-					 btn1_both=None, 	btn2_both=None,    btn3_both=None,    btn4_both=None)
+	add_event_detect(up_falling=None, left_falling=None, down_falling=None, right_falling=None, 
+					 up_rising=None,	left_rising=None,  down_rising=None,  right_rising=None, 
+					 up_both=None, 	left_both=None,    down_both=None,    right_both=None)
 	Choose the Button you need, what kind of edge it would be and what callback
 	function's name. if youdont need a button, leave it empty. 
 	DO NOT DEFINED TWO EDGE DETECTION EVENT FOR ONE BUTTON
 	Like this:
 	'''
-	Buttons.add_event_detect(btn1_falling=btn1, btn2_rising=btn2, btn3_both=btn3)
+	Buttons.add_event_detect(up_falling=up, left_rising=left, down_both=down)
 	
 
 def main():
@@ -28,20 +28,20 @@ def main():
 
 
 # Add callback function for each button
-def btn1(chn):
-	print 'Button 1 falling!'
+def up(chn):
+	print 'up falling!'
 	
-def btn2(chn):
-	print 'Button 2 rising'
+def left(chn):
+	print 'left rising'
 
-def btn3(chn):
-	tmp = GPIO.input(Buttons.btn3)
+def down(chn):
+	tmp = GPIO.input(Buttons.DOWN)
 	if tmp == 0:
-		print 'Button 3 falling!'
+		print 'down falling!'
 	elif tmp == 1:
-		print 'Button 3 rising'
+		print 'down rising'
 
-def btn4(chn):
+def right(chn):
 	pass
 
 def destroy():
