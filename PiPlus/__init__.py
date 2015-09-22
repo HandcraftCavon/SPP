@@ -2,10 +2,10 @@
 import RPi.GPIO as GPIO
 import time
 import math
+import random
 import smbus
 import time
 import os
-import logging
 
 D0		=	7
 
@@ -45,15 +45,30 @@ AIN3	=	3
 
 GPIO.setmode(GPIO.BOARD)
 
+UP = 0
+LEFT = 1
+DOWN = 2
+RIGHT = 3
+HOME = 4
+PRESSED = 5
+
 def map(x, in_min, in_max, out_min, out_max):
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 def NormalDistribution(x, u=0, d=1):
 	PI = 3.1415926
 	E = 2.718281828
-	result = (E ** (- ((x-u)**2) / (2*d*d))) / (math.sqrt(2 * PI) * d)
+	result = (E ** (-((x-u)**2) / (2*d*d))) / (math.sqrt(2 * PI) * d)
 	return result
 
+class DS1307(object):
+	def __init__(self):
+		os.system('echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device')
+	
+	def get_datetime(self):
+		_datetime=os.system('hwclock -r')
+		return _datetime
+	
 class PCF8591(object):
 	# PCF8597 on Plus Shield
 	_ADC_bus = smbus.SMBus(1) # or bus = smbus.SMBus(0) for Revision 1 boards
@@ -73,12 +88,18 @@ class PCF8591(object):
 			self._bus.write_byte(self._address,0x43)
 		self._bus.read_byte(self._address) # dummy read to start conversion
 		return self._bus.read_byte(self._address)
-
+		
+	def read_all(self):
+		return self.read(0), self.read(1), self.read(2), self.read(3)
+		
 	def write(self, val):
 		_temp = val # move string value to temp
 		_temp = int(_temp) # change string to integer
 		# print temp to see on terminal else comment out
 		self._bus.write_byte_data(self._address, 0x40, _temp)
+		
+	def destroy(self):
+		pass
 
 class LED_Ring(object):
 	# Plus LED Ring module of PiPlus from SunFounder
@@ -471,7 +492,20 @@ class Rotary_Encoder(object):
 		GPIO.setup(self._BPin, GPIO.IN)
 		GPIO.setup(self.BTN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	def rotarydeal(self, _counter):
+	def add_event_detect(self, btn_falling=None, btn_rising=None, btn_both=None):
+		_c_btn = [btn_falling, btn_rising, btn_both]
+
+		if _c_btn.count(None) < 2:
+			raise RuntimeError('Conflicting edge detection events, The same button should not be defined as two different edge detection events')
+
+		if btn_falling != None:
+			GPIO.add_event_detect(self.BTN, GPIO.FALLING, callback=btn_falling)
+		if btn_rising != None:
+			GPIO.add_event_detect(self.BTN, GPIO.RISING, callback=btn_rising)
+		if btn_both != None:
+			GPIO.add_event_detect(self.BTN, GPIO.BOTH, callback=btn_both)
+
+	def rotary_deal(self, _counter, step=1):
 		self._Last_RoB_Status = GPIO.input(self._BPin)
 		while(not GPIO.input(self._APin)):
 			self._Current_RoB_Status = GPIO.input(self._BPin)
@@ -479,10 +513,55 @@ class Rotary_Encoder(object):
 		if self._flag == 1:
 			self._flag = 0
 			if (self._Last_RoB_Status == 0) and (self._Current_RoB_Status == 1):
-				_counter = _counter + 1
+				_counter = _counter + step
 			if (self._Last_RoB_Status == 1) and (self._Current_RoB_Status == 0):
-				_counter = _counter - 1
+				_counter = _counter - step
 		return _counter
+
+	def destroy(self):
+		GPIO.remove_event_detect(self.BTN)
+
+class Analog_Port(object):
+	def __init__(self):
+		self._adc = PCF8591()
+		
+	def destroy():
+		ADC.destroy()
+
+class Photoresistor(Analog_Port):
+	def brightness(self):
+		return 255 - self._adc.read(AIN0)
+
+class Slide_Potentiometers(Analog_Port):
+	def get_value(self, *_sp): # spi: slider potentiometer
+		_sp_value = []
+		for _i in _sp:
+			_sp_value.append(self._adc.read(_i-1))
+		
+		return tuple(_sp_value)
+			
+
+class Joystick(Analog_Port):
+	def read(self):
+		_x = self._adc.read(AIN0)
+		_y = self._adc.read(AIN1)
+		_btn = self._adc.read(AIN2)
+		return _x, _y, _btn
+
+	def get_status(self):
+		_x, _y, _btn = self.read()
+		if _y > 245:
+			return UP
+		if _x > 245:
+			return LEFT
+		if _y < 10:
+			return DOWN
+		if _x < 10:
+			return RIGHT
+		if 123 < _x < 133 and 123< _y < 133 and _btn > 50:
+			return HOME
+		if _btn == 0:
+			return PRESSED
 
 class LCD1602(object):
 	# Plus LCD1602 module of PiPlus from SunFounder

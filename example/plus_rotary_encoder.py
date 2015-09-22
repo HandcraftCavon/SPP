@@ -38,10 +38,11 @@ def main():
 			init_flag = 0
 		
 		'''
-		rotarydeal(_value) changes the import value by spining the Rotary Encoder
-		clock-wise, to add 1, anti clock-wise to minus 1
+		rotary_deal(_value, step=1) changes _value by spining the Rotary Encoder
+		clock-wise to add 1, anti clock-wise to minus 1
+		step is for adding how much by spining one step of the Rotary Encoder 
 		'''
-		count = RE.rotarydeal(count)
+		count = RE.rotary_deal(count, step=2)
 		if tmp != count:
 			print count
 			tmp = count
