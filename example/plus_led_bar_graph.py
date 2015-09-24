@@ -1,28 +1,26 @@
 #!/usr/bin/env python
-import PiPlus
-import time
-import math
+from PiPlus import *
 
 def setup():
 	global Bar
-	''''
+	'''
 	initial the LED Bar Graph module with PiPlus.LED_Bar_Graph(port='A')
 	Set port to A or B, accoring to the port you plug the module in.
 	Leave empty for default setting port='A'
 	'''
-	Bar = PiPlus.LED_Bar_Graph(port='B')
+	Bar = LED_Bar_Graph(port='B')
 
 def main():
 	while True:
 		'''
 		meter(value) is a meter, value range from 0 to 255.
 		'''
-		'''
+		
 		for x in range(255):
 			Bar.meter(x)
 			print 'x =', x
 			time.sleep(0.01)
-		'''
+		
 		'''
 		pulse(value) is also a meter, but put 0 is in the middle.
 		value range from 0 to 255
