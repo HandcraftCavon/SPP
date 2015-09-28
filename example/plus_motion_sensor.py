@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global MOTION
 	'''
-	initial the Plus Motion Sensor module with PiPlus.Motion_Sensor()
+	initial the Plus Motion Sensor module with SunFounder_PiPlus.Motion_Sensor()
 	No argument needed.
 	'''
 	MOTION = Motion_Sensor()

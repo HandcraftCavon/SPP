@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global Ring
 	'''
-	initial the LED Ring module with PiPlus.LED_Ring(port='A')
+	initial the LED Ring module with SunFounder_PiPlus.LED_Ring(port='A')
 	Set port to A or B, accoring to the port you plug the module in.
 	Leave empty for default setting port='A'
 	'''

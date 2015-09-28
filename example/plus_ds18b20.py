@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global TEMP
 	'''
-	initial the DS18B20 module with PiPlus.DS18B20()
+	initial the DS18B20 module with SunFounder_PiPlus.DS18B20()
 	'''
 	TEMP = DS18B20()
 

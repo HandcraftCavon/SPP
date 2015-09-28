@@ -1,11 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
-import time
+from SunFounder_PiPlus import *
 
 def setup():
 	global LCD
 	'''
-	initial the LCD1602 module with PiPlus.LCD1602(BACKGROUND_LIGHT=1, ADDRESS=0x27)
+	initial the LCD1602 module with SunFounder_PiPlus.LCD1602(BACKGROUND_LIGHT=1, ADDRESS=0x27)
 	Set ADDRESS to 0x20~0x27, accoring to the address you set onthe module(see more at www.sunfounder.com).
 	Set BACKGROUND_LIGHT to 0 or 1 to turn off or turn on the background light. 
 	Leave empty for default setting BACKGROUND_LIGHT=1/ADDRESS=0x27

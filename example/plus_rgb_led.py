@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global RGB
 	'''
-	initial the RGB LED module with PiPlus.RGB_LED(port='A')
+	initial the RGB LED module with SunFounder_PiPlus.RGB_LED(port='A')
 	Set port to A or B, accoring to the port you plug the module in.
 	Leave empty for default setting port='A'
 	'''

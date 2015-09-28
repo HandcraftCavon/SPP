@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 DT = DS1307()
 while True:

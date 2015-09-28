@@ -16,9 +16,9 @@ with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='PiPlus',
+    name='SunFounder_PiPlus',
     version='1.0.0',
-    description='PiPlus python module for Raspberry Pi',
+    description='SunFounder_PiPlus python module for Raspberry Pi',
     long_description=long_description,
 
     url='https://www.sunfounder.com',
@@ -26,7 +26,7 @@ setup(
     author='Cavon Lee',
     author_email='lijiarong@sunfounder.com',
 
-    license='MIT',
+    license='GNU',
 
     classifiers=[
         'Development Status :: 3 - Alpha',

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global MIC
 	'''
-	initial the Sound Sensor module with PiPlus.Sound_Sensor()
+	initial the Sound Sensor module with SunFounder_PiPlus.Sound_Sensor()
 	'''
 	MIC = Sound_Sensor()
 

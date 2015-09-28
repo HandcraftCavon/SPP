@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global PR
 	'''
-	initial the Photoresistor module with PiPlus.Photoresistor()
+	initial the Photoresistor module with SunFounder_PiPlus.Photoresistor()
 	'''
 	PR = Photoresistor()
 

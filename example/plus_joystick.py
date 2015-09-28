@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global Joystick
 	'''
-	initial the Joystick module with PiPlus.Joystick(port='A')
+	initial the Joystick module with SunFounder_PiPlus.Joystick()
 	'''
 	Joystick = Joystick()
 

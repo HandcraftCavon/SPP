@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global SP
 	'''
-	initial the Slide Potentiometers module with PiPlus.Slide_Potentiometers()
+	initial the Slide Potentiometers module with SunFounder_PiPlus.Slide_Potentiometers()
 	'''
 	SP = Slide_Potentiometers()
 
