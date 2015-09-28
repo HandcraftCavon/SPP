@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from PiPlus import *
+from SunFounder_PiPlus import *
 
 def setup():
 	global MIC, Buzzer
