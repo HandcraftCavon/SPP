@@ -7,6 +7,9 @@ import smbus
 import time
 import os
 
+'''
+Convert the GPIOs from BOARD to PIPLUS
+'''
 D0		=	7
 
 DA1		=	11
@@ -45,6 +48,9 @@ AIN3	=	3
 
 GPIO.setmode(GPIO.BOARD)
 
+'''
+Defined Joystick status
+'''
 UP = 0
 LEFT = 1
 DOWN = 2
@@ -52,36 +58,50 @@ RIGHT = 3
 HOME = 5
 PRESSED = 6
 
+'''
+Define a Map fuction to map different ranges
+'''
 def Map(x, in_min, in_max, out_min, out_max):
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
+'''
+A function for Normal Distribution function
+'''
 def NormalDistribution(x, u=0, d=1):
 	PI = 3.1415926
 	E = 2.718281828
 	result = (E ** (-((x-u)**2) / (2*d*d))) / (math.sqrt(2 * PI) * d)
 	return result
 
-def Low_pass_Filter(_value, _new_value):
+'''
+A function for Low-pass Filter
+'''
+def LowpassFilter(_value, _new_value):
 	_a = 50
 	_base = 100
 	return ((_base-_a)*_value)/100.0+(_a*_new_value)/100.0
 
-
+'''
+A function to get Threshold
+'''
 def Threshold(_value, threshold=200):
 	if _value > threshold:
 		return 1
 	elif _value < threshold:
 		return 0
 	
-
+'''
+classes for each module
+'''
 class DS1307(object):
+	# DS1307 on Plus Shield
 	def __init__(self):
 		os.system('echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device')
 	
 	def get_datetime(self):
 		_datetime=os.system('hwclock -r')
 		return _datetime
-		
+
 class PCF8591(object):
 	# PCF8597 on Plus Shield
 	_ADC_bus = smbus.SMBus(1) # or bus = smbus.SMBus(0) for Revision 1 boards
