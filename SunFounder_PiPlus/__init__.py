@@ -89,7 +89,7 @@ def Threshold(_value, threshold=200):
 		return 1
 	elif _value < threshold:
 		return 0
-	
+
 '''
 classes for each module
 '''
@@ -250,8 +250,10 @@ class LED_Ring(object):
 	def spin(self, _ring, w=0, dt=0.2):
 		_tmp = _ring
 		self.on(_tmp)
-		_tmp = self._spin(w, _tmp)
-		time.sleep(dt)
+		if dt != 0:
+			_tmp = self._spin(w, _tmp)
+			time.sleep(dt)
+		return _tmp
 
 	def meter(self, _value, brightness=40):
 		_ring = self.ALL_OFF()
@@ -557,16 +559,16 @@ class Rotary_Encoder(object):
 class Analog_Port(object):
 	def __init__(self):
 		self._adc = PCF8591()
-		
-	def destroy():
-		ADC.destroy()
+	
+	def destroy(self):
+		self._adc.destroy()
 
 class Photoresistor(Analog_Port):
 	def brightness(self):
-		return 255 - self._adc.read(AIN0)
+		return 255 - self._adc.read(AIN3)
 
 class Slide_Potentiometers(Analog_Port):
-	def get_value(self, *_sp): # spi: slider potentiometer
+	def get_value(self, *_sp): # _sp: slider potentiometer
 		_sp_value = []
 		for _i in _sp:
 			_sp_value.append(self._adc.read(_i-1))
@@ -694,6 +696,8 @@ class LCD1602(object):
 
 	def destroy(self):
 		self.clear()
+		self._LCD_bus.write_byte(self._LCD_ADDR,0xF7)
+		self._LCD_bus.close()
 
 class Motion_Sensor(object):
 	# Plus Motion Sensor of PiPlus from SunFounder

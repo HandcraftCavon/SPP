@@ -3,5 +3,5 @@ build
 build/*
 TEMP
 dist
-PiPlus.egg-info
+*.egg-info
 test
