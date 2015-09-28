@@ -4,12 +4,17 @@ from PiPlus import *
 def setup():
 	global MIC, Buzzer
 	MIC = Sound_Sensor()
-	Buzzer = Buzzer(port='B')
+	Buzzer = Buzzer(port='A')
 
 def main():
+	base = 100
 	while True:
-		tmp = abs(MIC.read())
-		if tmp > 200:
+		flag = []
+		for i in range(base):
+			tmp = MIC.read()
+			print tmp
+			flag.append(Threshold(tmp, threshold=200))
+		if flag.count(1) >= 1:
 			Buzzer.on()
 		else:
 			Buzzer.off()

@@ -10,7 +10,12 @@ def setup():
 
 def main():
 	while True:
-		print MIC.read_max()
+		'''
+		read()
+		this function returns the value of microphone.
+		value range from 0 to 255
+		'''
+		print MIC.read()
 
 def destroy():
 	MIC.destroy()

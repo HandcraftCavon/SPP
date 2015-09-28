@@ -52,7 +52,7 @@ RIGHT = 3
 HOME = 5
 PRESSED = 6
 
-def map(x, in_min, in_max, out_min, out_max):
+def Map(x, in_min, in_max, out_min, out_max):
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
 
 def NormalDistribution(x, u=0, d=1):
@@ -66,6 +66,14 @@ def Low_pass_Filter(_value, _new_value):
 	_base = 100
 	return ((_base-_a)*_value)/100.0+(_a*_new_value)/100.0
 
+
+def Threshold(_value, threshold=200):
+	if _value > threshold:
+		return 1
+	elif _value < threshold:
+		return 0
+	
+
 class DS1307(object):
 	def __init__(self):
 		os.system('echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device')
@@ -73,7 +81,7 @@ class DS1307(object):
 	def get_datetime(self):
 		_datetime=os.system('hwclock -r')
 		return _datetime
-	
+		
 class PCF8591(object):
 	# PCF8597 on Plus Shield
 	_ADC_bus = smbus.SMBus(1) # or bus = smbus.SMBus(0) for Revision 1 boards
@@ -341,9 +349,9 @@ class RGB_LED(object):
 			GPIO.output(i, GPIO.HIGH)    # Turn off all LEDs
 
 	def rgb(self, _R_val, _G_val, _B_val):
-		_R_val = map(_R_val, 0, 255, 0, 100)
-		_G_val = map(_G_val, 0, 255, 0, 100)
-		_B_val = map(_B_val, 0, 255, 0, 100)
+		_R_val = Map(_R_val, 0, 255, 0, 100)
+		_G_val = Map(_G_val, 0, 255, 0, 100)
+		_B_val = Map(_B_val, 0, 255, 0, 100)
 		
 		self._R.ChangeDutyCycle(100-_R_val)
 		self._G.ChangeDutyCycle(100-_G_val)
@@ -352,9 +360,9 @@ class RGB_LED(object):
 	def breath(self, _R_val, _G_val, _B_val, dt = 0.01):
 		for x in range(628):
 			y = -math.cos(x/100.0)*128+128
-			_R = map(y, 0, 256, 0, _R_val)
-			_G = map(y, 0, 256, 0, _G_val)
-			_B = map(y, 0, 256, 0, _B_val)
+			_R = Map(y, 0, 256, 0, _R_val)
+			_G = Map(y, 0, 256, 0, _G_val)
+			_B = Map(y, 0, 256, 0, _B_val)
 			self.rgb(_R, _G, _B)
 			time.sleep(dt)
 			
@@ -572,23 +580,12 @@ class Sound_Sensor(Analog_Port):
 	def __init__(self):
 		self._adc = PCF8591()
 		self._tmp = 0
+		self._F_tmp = 0
 		
 	def read(self):
 		_value = self._adc.read(AIN3)
+		_value = Map(_value, 150, 255, 0, 255)
 		return _value
-		
-	def read_max(self):
-		_value = self._adc.read(AIN3)
-		_value = abs(_value)
-		_value = map(_value, 170, 255, 0, 255)
-#		if _value > self._tmp:
-#			self._tmp = _value
-#		elif _value < self._tmp:
-#			self._tmp = 0
-		_F_value = Low_pass_Filter(self._tmp, _value)
-		self._tmp = _value
-	
-		return _F_value
 
 class LCD1602(object):
 	# Plus LCD1602 module of PiPlus from SunFounder
@@ -757,3 +754,30 @@ class Motion_Sensor(object):
 	def destroy():
 		pass
 
+class DS18B20(object):
+	def __init__(self):
+		self._ds18b20 = ''
+		for i in os.listdir('/sys/bus/w1/devices'):
+			if i[:3] == '28-':
+				self._ds18b20 = i
+		self.C = 0
+		self.F = 1
+		print 'DS18B20 founded.\nSlave address:', self._ds18b20
+
+	def read(self, unit=0):
+		_location = '/sys/bus/w1/devices/' + self._ds18b20 + '/w1_slave'
+		_tfile = open(_location)
+		_text = _tfile.read()
+		_tfile.close()
+		_secondline = _text.split("\n")[1]
+		_temperaturedata = _secondline.split(" ")[9]
+		_temperature = float(_temperaturedata[2:])
+		_temperature_c = _temperature / 1000
+		if unit == self.C:
+			return _temperature_c
+		if unit == self.F:
+			_temperature_f = _temperature_c * 9.0 / 5.0 + 32.0
+			return _temperature_f
+
+	def destroy(self):
+		pass
