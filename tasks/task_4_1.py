@@ -12,12 +12,12 @@ def main():
 		R, G, B = SP.get_value(1, 2, 3)
 		print 'R = %d, G = %d, B = %d' % (R, G, B)
 		RGB.rgb(R, G, B)
-		value = R*65536 + G*256 + B
+		value = (R << 16) + (G << 8) + B
 		hex_value = '%X' % value
 		for i in range(1, 6):
 			if value < 16**i:
 				hex_value = '0'+hex_value
-			
+		print value, hex_value
 		hex_value = 'RGB: 0x' + hex_value
 		LCD.write(0, 0, hex_value)
 

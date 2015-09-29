@@ -12,23 +12,31 @@ def setup():
 		print '\nNow the DS1307 is:'
 		time.sleep(0.5)
 		os.system('hwclock -r')
-		check = raw_input('Is it right? Do you need to set the clock? ')
-		if check == 'n' or check == 'N':
-			print 'OK, we are done here. Install finished.'
-			quit()
-		elif check != 'y' or check != 'Y':
-			print "\nSorry, I don't understand you, I'm expecting a \"y\" or an \"n\" here, so Try it again. "
+		while True:
+			check = raw_input('Is it right? Do you need to set the clock? ')
+			if check == 'n' or check == 'N':
+				print 'OK, we are done here. Install finished.'
+				quit()
+			elif check == 'y' or check == 'Y':
+				break
+			else:
+				print "\nSorry, I don't understand you, I'm expecting a \"y\" or an \"n\" here, so Try it again. "
 
-	print "\nBrillient! Let's set the date first!"
+	print "\nLet's set the date!"
 	confirm = None
 	while confirm != True:
 		flag = 1
 		count_d = 0
 		while flag == 1:
-			date = raw_input('\nType in year, month and date in types "YYYY/MM/DD": ')
-			year = date.split('/')[0]
-			month = date.split('/')[1]
-			dateofmonth = date.split('/')[2]
+			while True:
+				try:
+					date = raw_input('\nType in year, month and date in types "YYYY/MM/DD": ')
+					year = date.split('/')[0]
+					month = date.split('/')[1]
+					dateofmonth = date.split('/')[2]
+					break
+				except:
+					print 'Error, Try, again.'
 			print ''
 			if int(month) in [1, 3, 5, 7, 8, 10, 12]:
 				if 0 < int(dateofmonth) < 32:
@@ -61,20 +69,23 @@ def setup():
 		if count_d <= 1:
 			print '\nGreat! Pretty easy huh?',
 
-		if count_d <= 2:
+		elif count_d <= 2:
 			print 'Well, we did it. ',
 			
-		if count_d > 2:
-			print 'Finally, we set the date. It took forever. But anyway.',
-
-		while confirm != True and confirm != False:
+		elif count_d > 2:
+			print 'Finally, we set the date. It took forever. But anyway.', 
+			
+		while True:
 			print '\nYou set the date to: %s. %s, %s' % (monthname[month], dateofmonth, year)
 			confirm = raw_input("Are you sure about that?(y/n) ")
 			if confirm == 'y' or confirm == 'Y':
 				confirm = True
+				break
 			elif confirm == 'n' or confirm == 'N':
 				confirm = False
+				break
 			else:
+				confirm = None
 				print "Sorry, I don't understand you, I'm expecting a \"y\" or an \"n\" here, so Try it again. "
 
 	print "\nNow! Let's set the time!"
@@ -83,10 +94,15 @@ def setup():
 		flag = 1
 		count_t = 0
 		while flag == 1:
-			correnttime = raw_input('\nType in corrent hour, minute and second in types "HH:MM:SS" (in 24-hour time):')
-			hour = correnttime.split(':')[0]
-			minute = correnttime.split(':')[1]
-			second = correnttime.split(':')[2]
+			while True:
+				try:
+					correnttime = raw_input('\nType in corrent hour, minute and second in types "HH:MM:SS" (in 24-hour time):')
+					hour = correnttime.split(':')[0]
+					minute = correnttime.split(':')[1]
+					second = correnttime.split(':')[2]
+					break
+				except:
+					print 'Error, Try, again.'
 			print ''
 			if int(hour) <= 24:
 				if int(hour) == 24:
@@ -116,14 +132,17 @@ def setup():
 		if count_t > 2:
 			print 'Finally, we set the date. It took forever. But anyway.',
 
-		while confirm != True and confirm != False:
+		while True:
 			print '\nYou set the corrent time to: %s:%s:%s' % (hour, minute, second)
 			confirm = raw_input("Are you sure about that?(y/n) ")
 			if confirm == 'y' or confirm == 'Y':
 				confirm = True
+				break
 			elif confirm == 'n' or confirm == 'N':
 				confirm = False
+				break
 			else:
+				confirm = None
 				print "Sorry, I don't understand you, I'm expecting a \"y\" or an \"n\" here, so Try it again. "
 				
 	print "Great! Now I will correct the time for you."
@@ -139,7 +158,7 @@ def setup():
 	print 'Done! Set clock on DS1307 to:'
 	os.system('sudo hwclock -r')
 
-	print 'OK, we are done here. Install finished. If anything goes wrong, copy or printscreen of this log to support@sunfounder.com'
+	print '\n\nOK, we are done here. Install finished. Thank you for your support. \nIf anything goes wrong, copy or printscreen of this log to support@sunfounder.com'
 
 
 if __name__ == "__main__":

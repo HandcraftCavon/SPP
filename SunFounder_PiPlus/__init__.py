@@ -6,6 +6,8 @@ import random
 import smbus
 import time
 import os
+import commands
+import threading
 
 '''
 Convert the GPIOs from BOARD to PIPLUS
@@ -58,6 +60,8 @@ RIGHT = 3
 HOME = 5
 PRESSED = 6
 
+RUNTIME = 1000
+
 '''
 Define a Map fuction to map different ranges
 '''
@@ -97,10 +101,33 @@ class DS1307(object):
 	# DS1307 on Plus Shield
 	def __init__(self):
 		os.system('echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device')
+		_datetime = ''
 	
 	def get_datetime(self):
-		_datetime=os.system('hwclock -r')
+		status, _datetime=commands.getstatusoutput('hwclock -r')
 		return _datetime
+		
+	def get_date(self):
+		_datetime = self.get_datetime()
+		split_datetime = _datetime.split(' ')
+		_date = [split_datetime[0], split_datetime[1], split_datetime[2], split_datetime[3]]
+		_blank = ' '
+		_date = _blank.join(_date)
+		return _date
+	
+	def get_time(self):
+		_time = self.get_datetime().split(' ')[4]
+		return _time
+			
+	def get_split_datetime(self):
+		_datetime = self.get_datetime()
+		split_datetime = _datetime.split(' ')
+		_date = [split_datetime[0], split_datetime[1], split_datetime[2], split_datetime[3]]
+		_time = split_datetime[4]
+		_blank = ' '
+		_date = _blank.join(_date)
+		return _date, _time
+	
 
 class PCF8591(object):
 	# PCF8597 on Plus Shield
@@ -677,7 +704,7 @@ class LCD1602(object):
 	def clear(self):
 		self._send_command(0x01) # Clear Screen
 
-	def write(self, x, y, str):
+	def write(self, x, y, text):
 		if x < 0:
 			x = 0
 		if x > 15:
@@ -690,9 +717,9 @@ class LCD1602(object):
 		# Move cursor
 		_addr = 0x80 + 0x40 * y + x
 		self._send_command(_addr)
-
-		for chr in str:
-			self._send_data(ord(chr))
+		text = str(text)
+		for i in text:
+			self._send_data(ord(i))
 
 	def destroy(self):
 		self.clear()
@@ -738,11 +765,7 @@ class Motion_Sensor(object):
 	def _get_y_rotation(self, _x, _y, _z):
 		_radians = math.atan2(_x, self._dist(_y, _z))
 		return -math.degrees(_radians)
-
-	def _get_z_rotation(self, _x, _y, _z):
-		_radians = math.atan2(_z, self._dist(_x, _y))
-		return math.degrees(_radians)
-		
+	
 	def get_gyro(self):
 		_gyro_xout = self._read_word_2c(0x43)
 		_gyro_yout = self._read_word_2c(0x45)
@@ -771,9 +794,14 @@ class Motion_Sensor(object):
 
 		return _accel_xout_scaled, _accel_yout_scaled, _accel_zout_scaled
 	
+	def get_temp(self):
+		_temperature = self._read_word_2c(0x41)
+		_temperature = _temperature/340+36.53
+		return _temperature
+	
 	def get_rotation(self):
 		_x, _y, _z = self.get_scaled_accel()
-		return self._get_x_rotation(_x, _y, _z), self._get_y_rotation(_x, _y, _z), self._get_z_rotation(_x, _y, _z)
+		return self._get_x_rotation(_x, _y, _z), self._get_y_rotation(_x, _y, _z)
 	
 	def destroy():
 		pass
@@ -781,19 +809,51 @@ class Motion_Sensor(object):
 class DS18B20(object):
 	def __init__(self):
 		self._ds18b20 = ''
-		for i in os.listdir('/sys/bus/w1/devices'):
-			if i[:3] == '28-':
-				self._ds18b20 = i
 		self.C = 0
 		self.F = 1
-		print 'DS18B20 founded.\nSlave address:', self._ds18b20
+		os.system('modprobe w1-gpio')
+		os.system('modprobe w1-therm')
+		while True:
+			for i in range(RUNTIME):
+				for i in os.listdir('/sys/bus/w1/devices'):
+					if i[:3] == '28-':
+						self._ds18b20 = i
+				if self._ds18b20 != '':
+					print 'DS18B20 founded.\nSlave address:', self._ds18b20
+					self._location = '/sys/bus/w1/devices/' + self._ds18b20
+					break
+				time.sleep(0.001)
+			if self._ds18b20 != '':
+				break
+			else:
+				print 'Timeout. No device. Check if Plus DS18B20 is pluged in.'
+				print 'Press enter to try again, or Crrl + C to quit.'
+				_tmp = raw_input()
 
-	def read(self, unit=0):
-		_location = '/sys/bus/w1/devices/' + self._ds18b20 + '/w1_slave'
-		_tfile = open(_location)
-		_text = _tfile.read()
-		_tfile.close()
-		_secondline = _text.split("\n")[1]
+	def get_temperature(self, unit=0):
+		_location = self._location + '/w1_slave'
+		while True:
+			for i in range(RUNTIME):
+				try:
+					_tfile = open(_location)
+					_text = _tfile.read()
+					_tfile.close()
+					_secondline = _text.split("\n")[1]
+					if _secondline == '00 00 00 00 00 00 00 00 00 t=0':
+						_flag = 0
+					else:
+						_flag = 1
+						break
+					time.sleep(0.001)
+				except:
+					_flag = 0
+			if _flag == 1:
+				break
+			else:
+				print 'Timeout. No device. Check if Plus DS18B20 is pluged in.'
+				print 'Press enter to try again, or Crrl + C to quit.'
+				_tmp = raw_input()
+
 		_temperaturedata = _secondline.split(" ")[9]
 		_temperature = float(_temperaturedata[2:])
 		_temperature_c = _temperature / 1000

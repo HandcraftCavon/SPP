@@ -8,6 +8,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 import ds1307setup as DS1307
+import sys
 
 here = path.abspath(path.dirname(__file__))
 
@@ -60,5 +61,9 @@ setup(
         ],
     },
 )
-	
-DS1307.setup()
+
+if len(sys.argv) > 2:
+	if sys.argv[2] == '-c':
+		DS1307.setup()
+	elif sys.argv[2] == '--help':
+		print 'use "-c" to setup DS1307 on Shield.' 

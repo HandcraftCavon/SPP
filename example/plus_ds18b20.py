@@ -16,8 +16,8 @@ def main():
 		set unit to DS18B20.C for celsius degree
 		set unit to DS18B20.F for fahrenheit degree
 		'''
-		temp_c = TEMP.read()	# Leave empty for default setting TEMP.C
-		temp_f = TEMP.read(TEMP.F)
+		temp_c = TEMP.get_temperature()	# Leave empty for default setting TEMP.C
+		temp_f = TEMP.get_temperature(TEMP.F)
 		print 'temperature =', temp_f, 'F'
 		print 'temperature =', temp_c, 'C'
 		time.sleep(0.2)
