@@ -9,7 +9,7 @@ def setup():
 	Set BACKGROUND_LIGHT to 0 or 1 to turn off or turn on the background light. 
 	Leave empty for default setting BACKGROUND_LIGHT=1/ADDRESS=0x27
 	'''
-	LCD = LCD1602(BACKGROUND_LIGHT=0)
+	LCD = LCD1602(BACKGROUND_LIGHT=1)
 
 def main():
 	'''

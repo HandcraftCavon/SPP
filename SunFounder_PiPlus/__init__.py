@@ -62,6 +62,8 @@ PRESSED = 6
 
 RUNTIME = 1000
 
+HOUR12 = 0		#12 hour clock define
+HOUR24 = 1		#24 hour clock define
 '''
 Define a Map fuction to map different ranges
 '''
@@ -99,9 +101,9 @@ classes for each module
 '''
 class DS1307(object):
 	# DS1307 on Plus Shield
-	def __init__(self):
+	def __init__(self, _clock = HOUR24):
 		os.system('echo ds1307 0x68 > /sys/class/i2c-adapter/i2c-1/new_device')
-		_datetime = ''
+		self._clockset = _clock
 	
 	def get_datetime(self):
 		status, _datetime=commands.getstatusoutput('hwclock -r')
@@ -117,6 +119,19 @@ class DS1307(object):
 	
 	def get_time(self):
 		_time = self.get_datetime().split(' ')[4]
+		if self._clockset == HOUR12 :
+			_hour = int(_time.split(':')[0])
+			if _hour > 11 :
+				apm = 'PM'
+			else:
+				apm = 'AM'
+			if _hour > 12 :
+				_hour = _hour - 12
+			if _hour == 0:
+				_hour = 12
+			if _hour < 10:
+				_hour = '0%d' % _hour
+			_time = '%s:%s:%s %s' % (_hour, _time.split(':')[1], _time.split(':')[2], apm)
 		return _time
 			
 	def get_split_datetime(self):
@@ -124,10 +139,22 @@ class DS1307(object):
 		split_datetime = _datetime.split(' ')
 		_date = [split_datetime[0], split_datetime[1], split_datetime[2], split_datetime[3]]
 		_time = split_datetime[4]
+		if self._clockset == HOUR12 :
+			_hour = int(_time.split(':')[0])
+			if _hour > 11 :
+				apm = 'PM'
+			else:
+				apm = 'AM'
+			if _hour > 12 :
+				_hour = _hour - 12
+			if _hour == 0:
+				_hour = 12
+			if _hour < 10:
+				_hour = '0%d' % _hour
+			_time = '%s:%s:%s %s' % (_hour, _time.split(':')[1], _time.split(':')[2], apm)
 		_blank = ' '
 		_date = _blank.join(_date)
 		return _date, _time
-	
 
 class PCF8591(object):
 	# PCF8597 on Plus Shield
